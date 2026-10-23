@@ -1,14 +1,21 @@
 
 import { NavLink, Outlet } from "react-router-dom";
-
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 const navClass = ({ isActive }) =>
-  `rounded-full px-3 py-2 text-sm font-medium transition-colors ${
-    isActive
-      ? "bg-forest-50 text-forest-700"
-      : "text-stone-600 hover:bg-stone-100 hover:text-ink"
+  `rounded-full px-3 py-2 text-sm font-medium transition-colors ${isActive
+    ? "bg-forest-50 text-forest-700"
+    : "text-stone-600 hover:bg-stone-100 hover:text-ink"
   }`;
 
 function MainLayout() {
+  const {  isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    logout();
+    navigate("/", { replace: true });
+  }
   return (
     <div className="flex min-h-screen flex-col bg-paper">
       <header className="sticky top-0 z-20 border-b border-line bg-paper/90 backdrop-blur-xl">
@@ -44,12 +51,24 @@ function MainLayout() {
             </NavLink>
           </nav>
 
-          <NavLink
-            to="/login"
-            className="inline-flex items-center gap-2 rounded-full bg-forest-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-forest-700"
-          >
-            Sign in <span aria-hidden="true">↗</span>
-          </NavLink>
+
+          {isAuthenticated ? (
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="inline-flex items-center gap-2 rounded-full bg-forest-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-forest-700"
+            >
+              Sign out
+            </button>
+          ) : (
+            <NavLink
+              to="/login"
+              className="inline-flex items-center gap-2 rounded-full bg-forest-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-forest-700"
+            >
+              Sign in <span aria-hidden="true">↗</span>
+            </NavLink>
+          )}
+
         </div>
       </header>
 

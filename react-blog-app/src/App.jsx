@@ -1,4 +1,5 @@
 
+import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
 
 import MainLayout from "./layouts/MainLayout";
@@ -9,10 +10,21 @@ import PostList from "./pages/PostList";
 import PostDetail from "./pages/PostDetail";
 import Login from "./pages/Login";
 import NewPost from "./pages/NewPost";
-import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+
+function DashboardFallback() {
+  return (
+    <div className="flex min-h-64 items-center justify-center">
+      <p className="text-sm font-medium text-muted">
+        Loading dashboard...
+      </p>
+    </div>
+  );
+}
 
 export const router = createBrowserRouter([
   {
@@ -34,7 +46,14 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { index: true, element: <Dashboard /> },
+      {
+        index: true,
+        element: (
+          <Suspense fallback={<DashboardFallback />}>
+            <Dashboard />
+          </Suspense>
+        ),
+      },
     ],
   },
   {

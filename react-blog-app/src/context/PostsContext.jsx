@@ -1,9 +1,6 @@
+import { createContext, useContext, useEffect, useReducer } from "react";
+import useLocalStorage from "../hooks/useLocalStorage";
 
-import {
-  createContext,
-  useContext,
-  useReducer,
-} from "react";
 
 const PostsContext = createContext(null);
 
@@ -55,6 +52,7 @@ Document your endpoints and test both successful requests and error cases.`,
   },
 ];
 
+
 function postsReducer(state, action) {
   switch (action.type) {
     case "ADD_POST":
@@ -66,10 +64,16 @@ function postsReducer(state, action) {
 }
 
 export function PostsProvider({ children }) {
-  const [posts, dispatch] = useReducer(
-    postsReducer,
+  const [savedPosts, setSavedPosts] = useLocalStorage(
+    "bloom-posts",
     initialPosts
   );
+
+  const [posts, dispatch] = useReducer(postsReducer, savedPosts);
+
+  useEffect(() => {
+    setSavedPosts(posts);
+  }, [posts, setSavedPosts]);
 
   return (
     <PostsContext.Provider value={{ posts, dispatch }}>
